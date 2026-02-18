@@ -377,14 +377,64 @@ export default function App(){
               fontSize:11
             }
           }
-          onClick={reset}
+          //onClick={reset}
           >
-
+            ↺ Reset
           </button>
 
         </div>
 
       </header>
+
+      <main style={stile.main}>
+
+        <div style={{
+          ...stile.card,
+          marginBottom:20,
+          borderColor: C.primaryColor,
+          background: `linear-gradient(135deg, ${C.bgCard}, ${C.primaryColor}08)`
+        }}>
+          
+          <div style={{
+            display:"flex",
+            flexWrap: "wrap",
+            gap: 32
+          }}>
+
+            <div style={{
+              minWidth: 260,
+              flex: 1
+            }}>
+
+              <div style={{
+                fontSize:11,
+                color: C.primaryColor,
+                fontWeight:700,
+                //letterSpacing: "0.1em",
+                marginBottom:8
+              }}> BUSINESS PROBLEM
+
+              </div>
+
+              <div style={{
+                color: C.textLabelColor,
+                fontSize: 12,
+                lineHeight:1.7
+              }}> Processing payments across distributed systems creates risk of 
+                <span style={{ color: C.dangerColor }}>double charges</span> , 
+                <span style={{ color: C.warningColor }}> inconsistent state</span> and 
+                <span style={{ color: C.dangerColor }}> lost transactions</span> on 
+                network failure or retry events.
+              </div>
+
+            </div>
+
+
+          </div>
+          
+        </div>
+
+      </main>
 
     </div>
   )
