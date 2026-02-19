@@ -485,13 +485,76 @@ export default function App(){
         </div>
 
         {/*STATS PANEL*/}
-        <div style={{ ...StatCard.grid3, marginBottom:20}}>
+        <div style={{ ...stile.grid3, marginBottom:20}}>
           <StatCard label="Total orders" value={orders.length} color={C.primaryColor} sub="ORDERS table" />
           <StatCard label="Confirmed" value={confirmed} color={C.successColor} sub="Payments recorded" />
           <StatCard label="Success Rate" value={successRate === "--" ? "--" : successRate + "%"} 
           color={successRate >=70? C.successColor : C.dangerColor} sub="Gateway ~80% success" />
+        </div>
+
+
+        <div style={stile.grid2}>
+
+          {/* POST ORDERS PANEL/FORM */}
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 16
+          }}>
+
+            <div style={stile.cardAccent}>
+              <div style={stile.sectionLabel}>
+                <span style={{color: C.primaryColor}}>▶ </span>
+                POST /orders
+
+              </div>
+              <div style={{
+                display:"flex",
+                flexDirection: "column",
+                gap:12
+              }}>
+                <div>
+                  <label style={stile.label}>customer_id</label>
+                  <input style={{...stile.input, ...(focusedField === "cid"? stile.inputFocus : {})}}
+                          value={customerId} placeholder="CUST001"
+                          onChange={ elem => setCustomerId(elem.target.value)}
+                          onFocus={()=> setFocusedField("cid")}
+                          onBlur={()=> setFocusedField(null)}                  
+                  />
+                </div>
+                <div>
+                  <label style={stile.label}>amount (EUR)</label>
+                  <input style={{...stile.input, ...(focusedField === "camtd"? stile.inputFocus : {})}}
+                          value={amount} placeholder="99.99" type="number" min="0.01" step="0.01"
+                          onChange={ elem => setAmount(elem.target.value)}
+                          onFocus={()=> setFocusedField("camtd")}
+                          onBlur={()=> setFocusedField(null)}                  
+                  />
+                </div>
+                <div>
+                  <label style={stile.label}>idempotency key 
+                    <span style={{color: C.textMutedColor, marginLeft:8}}> 
+                      (leave empty to auto-generate)
+                    </span>
+                  </label>
+                  <input style={{...stile.input, ...(focusedField === "ckeyd"? stile.inputFocus : {})}}
+                          value={idempKey} placeholder="unique-key-001 or leave blank"
+                          onChange={ elem => setIdempKey(elem.target.value)}
+                          onFocus={()=> setFocusedField("key")}
+                          onBlur={()=> setFocusedField(null)}                  
+                  />
+                </div>
+
+              </div>
+
+            </div>
+
+
+          </div>
 
         </div>
+
+
 
       </main>
 
