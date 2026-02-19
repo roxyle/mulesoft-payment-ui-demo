@@ -313,6 +313,16 @@ function StatCard({label, value, color = C.primaryColor, sub}) {
 }
 
 export default function App(){
+  //form 
+  const [customerId, setCustomerId] = useState("CUST001")
+  const [amount, setAmount]= useState("99.99")
+  const [idempKey, setIdempKey] = useState("")
+  const [focusedField, setFocusedField] = useState(null)
+  
+  //db
+  const [orders, setOrders] = useState(INITIAL_ORDERS)
+  const [payments, setPayments] = useState(INITIAL_PAYMENTS)
+  const [idempotency, setIdempotency] = useState(INITIAL_IDEMPOTENCY)
 
   //interfaccia
   return (
@@ -388,6 +398,8 @@ export default function App(){
 
       <main style={stile.main}>
 
+        {/* DESCRIPTION PANEL*/}
+
         <div style={{
           ...stile.card,
           marginBottom:20,
@@ -421,7 +433,7 @@ export default function App(){
                 fontSize: 12,
                 lineHeight:1.7
               }}> Processing payments across distributed systems creates risk of 
-                <span style={{ color: C.dangerColor }}>double charges</span> , 
+                <span style={{ color: C.dangerColor }}> double charges</span>, 
                 <span style={{ color: C.warningColor }}> inconsistent state</span> and 
                 <span style={{ color: C.dangerColor }}> lost transactions</span> on 
                 network failure or retry events.
@@ -429,9 +441,48 @@ export default function App(){
 
             </div>
 
+            <div style={{flex: 1, minWidth:260}}>
+              <div style={{
+                fontSize:11,
+                color: C.successColor, 
+                fontWeight:700,
+                //letterSpacing:"0.1em",
+                marginBottom:8
+              }}>SOLUTION: 3 PATTERNS
+
+              </div>
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap:5
+              }}>
+                {
+                  [
+                    ["Compensation (Saga):", "Auto-rollback on partial failure. No orphaned PENDING orders."],
+                    ["Idempotency:", "Safe retries via key caching (24h TTL). No duplicate charges."],
+                    ["Correlation IDs:", "UUID propagated across all systems. Full traceability."]
+
+                  ].map(([k,v])=>(
+                    <div key={k} style={{fontSize:12}}>
+                      <span style={{color: C.textCodeColor}}>{k}</span>
+                      <span style={{ color: C.textMutedColor}}> {v}</span>
+                    </div>
+                  ))
+                }
+
+              </div>
+
+            </div>
+
 
           </div>
           
+        </div>
+
+        {/*STATS PANEL*/}
+        <div style={{ ...StatCard.grid3, marginBottom:20}}>
+          <StatCard label="Total orders" value={orders.length} />
+
         </div>
 
       </main>
