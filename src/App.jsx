@@ -324,6 +324,11 @@ export default function App(){
   const [payments, setPayments] = useState(INITIAL_PAYMENTS)
   const [idempotency, setIdempotency] = useState(INITIAL_IDEMPOTENCY)
 
+  // stats
+  const confirmed = orders.filter(o => o.status === "CONFIRMED").length;
+  const failed    = orders.filter(o => o.status === "FAILED").length;
+  const successRate = orders.length ? Math.round((confirmed / orders.length) * 100) : "--";
+
   //interfaccia
   return (
     <div style={stile.root}>
@@ -481,7 +486,10 @@ export default function App(){
 
         {/*STATS PANEL*/}
         <div style={{ ...StatCard.grid3, marginBottom:20}}>
-          <StatCard label="Total orders" value={orders.length} />
+          <StatCard label="Total orders" value={orders.length} color={C.primaryColor} sub="ORDERS table" />
+          <StatCard label="Confirmed" value={confirmed} color={C.successColor} sub="Payments recorded" />
+          <StatCard label="Success Rate" value={successRate === "--" ? "--" : successRate + "%"} 
+          color={successRate >=70? C.successColor : C.dangerColor} sub="Gateway ~80% success" />
 
         </div>
 
