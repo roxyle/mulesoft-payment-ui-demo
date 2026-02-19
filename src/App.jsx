@@ -324,10 +324,167 @@ export default function App(){
   const [payments, setPayments] = useState(INITIAL_PAYMENTS)
   const [idempotency, setIdempotency] = useState(INITIAL_IDEMPOTENCY)
 
-  // stats
+  // statistiche
   const confirmed = orders.filter(o => o.status === "CONFIRMED").length;
   const failed    = orders.filter(o => o.status === "FAILED").length;
   const successRate = orders.length ? Math.round((confirmed / orders.length) * 100) : "--";
+
+  // stato UI 
+  const [processing,  setProcessing]  = useState(false);
+  const [steps,       setSteps]       = useState([]);
+  const [lastResult,  setLastResult]  = useState(null);
+  const [logs,        setLogs]        = useState([]);
+  const [activeTab,   setActiveTab]   = useState("orders");
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  async function runStep(idx, label, desc, status, delay = 600) {
+    setSteps(prev => {
+      const next = [...prev];
+      next[idx] = { label, desc, status: "running", active: true };
+      return next;
+    });
+    await sleep(delay);
+    setSteps(prev => {
+      const next = [...prev];
+      next[idx] = { label, desc, status, active: true };
+      return next;
+    });
+  }
+
+  function addLog(msg, type = "info") {
+    const colors = { info: C.textMid, success: C.success, error: C.danger, warn: C.warning, system: C.code };
+    setLogs(prev => [...prev, { msg, color: colors[type] || C.textMid, ts: now() }]);
+  }
+
+  async function processPayment() {
+    if (processing) return;
+    const amt = parseFloat(amount);
+    if (!customerId.trim() || isNaN(amt) || amt <= 0) {
+      addLog("ERROR: invalid input -- customer_id and amount required", "error");
+      return;
+    }
+
+    setProcessing(true);
+    setLastResult(null);
+    const key = idempKey.trim() || generateUUID();
+    const correlationId = generateUUID();
+
+    // ── STEP DEFINITIONS ──
+    const stepDefs = [
+      ["Check idempotency",       "SELECT response FROM idempotency_log WHERE key=? AND expires_at > NOW()"],
+      ["Create order (PENDING)",  "INSERT INTO orders (customer_id, amount, status, correlation_id)"],
+      ["Call payment gateway",    "POST /mock-payment  --  20% random failure rate"],
+      ["Write payment record",    "INSERT INTO payments (order_id, transaction_id, amount, method)"],
+      ["Update order (CONFIRMED)","UPDATE orders SET status='CONFIRMED' WHERE id=?"],
+      ["Save idempotency cache",  "INSERT INTO idempotency_log (key, order_id, response, expires_at)"],
+    ];
+    setSteps(stepDefs.map(([label, desc]) => ({ label, desc, status: "idle", active: false })));
+
+    addLog(`──────────────────────────────────────`, "system");
+    addLog(`[${now()}] NEW REQUEST`, "system");
+    addLog(`customer_id: ${customerId}  amount: ${amt}  key: ${key.substring(0,16)}...`, "info");
+    addLog(`correlation_id: ${correlationId.substring(0,16)}...`, "info");
+
+    await sleep(300);
+
+    // ── STEP 0: idempotency check ──
+    addLog(`[STEP 1] Checking idempotency log...`, "info");
+    const cached = idempotency.find(r => r.key === key && new Date(r.expires_at) > new Date());
+    await runStep(0, stepDefs[0][0], stepDefs[0][1], cached ? "cached" : "ok", 700);
+
+    if (cached) {
+      addLog(`Idempotency HIT: returning cached response`, "warn");
+      addLog(`order_id: ${cached.order_id}  (no duplicate created)`, "warn");
+      setLastResult({ type: "idempotency", orderId: cached.order_id, key });
+      setProcessing(false);
+      return;
+    }
+
+    addLog(`Idempotency MISS: proceeding with new order`, "info");
+
+    // ── STEP 1: create order PENDING ──
+    addLog(`[STEP 2] Writing PENDING order to DB...`, "info");
+    const orderId = orderIdCounter++;
+    const newOrder = {
+      id: orderId, customer_id: customerId, amount: amt,
+      status: "PENDING", correlation_id: correlationId,
+      created_at: now(), updated_at: now(),
+    };
+    setOrders(prev => [...prev, newOrder]);
+    await runStep(1, stepDefs[1][0], stepDefs[1][1], "ok", 600);
+    addLog(`Order #${orderId} created  status=PENDING`, "info");
+
+    // ── STEP 2: call gateway (20% failure) ──
+    addLog(`[STEP 3] Calling mock payment gateway...`, "info");
+    await runStep(2, stepDefs[2][0], stepDefs[2][1], "running", 900);
+    const gatewayFails = Math.random() < 0.2;
+
+    if (gatewayFails) {
+      // ── FAILURE PATH: compensation ──
+      await runStep(2, stepDefs[2][0], stepDefs[2][1], "error", 200);
+      addLog(`Gateway TIMEOUT: APP:PAYMENT_GATEWAY_ERROR`, "error");
+      addLog(`[COMPENSATION] Rolling back order #${orderId}...`, "error");
+
+      // skip steps 3,4,5
+      setSteps(prev => {
+        const next = [...prev];
+        next[3] = { ...stepDefs[3], status: "idle", active: false };
+        next[4] = { ...stepDefs[4], status: "idle", active: false };
+        next[5] = { ...stepDefs[5], status: "idle", active: false };
+        return next;
+      });
+
+      // compensate order
+      setOrders(prev => prev.map(o =>
+        o.id === orderId ? { ...o, status: "FAILED", updated_at: now() } : o
+      ));
+
+      addLog(`Order #${orderId} -> status=FAILED`, "error");
+      addLog(`payments table: NO record inserted (rollback)`, "error");
+      addLog(`idempotency_log: NO cache saved (errors not cached)`, "error");
+      setLastResult({ type: "failure", orderId, correlationId });
+      setProcessing(false);
+      return;
+    }
+
+    // ── SUCCESS PATH ──
+    await runStep(2, stepDefs[2][0], stepDefs[2][1], "ok", 200);
+    const transactionId = generateUUID();
+    addLog(`Gateway response: 200 OK  tx_id: ${transactionId.substring(0,12)}...`, "success");
+
+    // ── STEP 3: write payment ──
+    addLog(`[STEP 4] Inserting payment record...`, "info");
+    const newPayment = {
+      id: paymentIdCounter++, order_id: orderId,
+      transaction_id: transactionId, amount: amt,
+      method: "CREDIT_CARD", status: "SUCCESS", created_at: now(),
+    };
+    setPayments(prev => [...prev, newPayment]);
+    await runStep(3, stepDefs[3][0], stepDefs[3][1], "ok", 500);
+    addLog(`Payment record created  order_id=${orderId}  status=SUCCESS`, "success");
+
+    // ── STEP 4: confirm order ──
+    addLog(`[STEP 5] Updating order status to CONFIRMED...`, "info");
+    setOrders(prev => prev.map(o =>
+      o.id === orderId ? { ...o, status: "CONFIRMED", updated_at: now() } : o
+    ));
+    await runStep(4, stepDefs[4][0], stepDefs[4][1], "ok", 500);
+    addLog(`Order #${orderId} -> status=CONFIRMED`, "success");
+
+    // ── STEP 5: save idempotency ──
+    addLog(`[STEP 6] Caching response in idempotency_log (24h TTL)...`, "info");
+    const respPayload = JSON.stringify({ status: "success", order_id: orderId, amount: amt });
+    setIdempotency(prev => [...prev, {
+      key, order_id: orderId, response: respPayload, expires_at: ttl24h()
+    }]);
+    await runStep(5, stepDefs[5][0], stepDefs[5][1], "ok", 400);
+    addLog(`Idempotency key cached  expires_at: ${ttl24h()}`, "success");
+    addLog(`[COMPLETE] order_id=${orderId}  correlation_id=${correlationId.substring(0,12)}...`, "success");
+
+    setLastResult({ type: "success", orderId, transactionId, amount: amt, correlationId });
+    setProcessing(false);
+  }
 
   //interfaccia
   return (
@@ -543,6 +700,30 @@ export default function App(){
                           onFocus={()=> setFocusedField("key")}
                           onBlur={()=> setFocusedField(null)}                  
                   />
+                </div>
+
+                <div style={{
+                  display:"flex",
+                  gap:8,
+                  marginTop:4
+                }}>
+                  <button onClick={processPayment} disabled={processing}
+
+                  
+                  style={{
+                    ...stile.btn("primary"),
+                    flex:1,
+                    opacity: processing? 0.6 : 1
+                  }}>
+
+                    {processing? "Processing...": "▶  Process Payment"}
+
+                  </button>
+                  <button //test idempotency
+                  >
+
+                  </button>
+
                 </div>
 
               </div>
