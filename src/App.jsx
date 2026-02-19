@@ -524,10 +524,10 @@ export default function App(){
                 </div>
                 <div>
                   <label style={stile.label}>amount (EUR)</label>
-                  <input style={{...stile.input, ...(focusedField === "camtd"? stile.inputFocus : {})}}
+                  <input style={{...stile.input, ...(focusedField === "amt"? stile.inputFocus : {})}}
                           value={amount} placeholder="99.99" type="number" min="0.01" step="0.01"
                           onChange={ elem => setAmount(elem.target.value)}
-                          onFocus={()=> setFocusedField("camtd")}
+                          onFocus={()=> setFocusedField("amt")}
                           onBlur={()=> setFocusedField(null)}                  
                   />
                 </div>
@@ -537,7 +537,7 @@ export default function App(){
                       (leave empty to auto-generate)
                     </span>
                   </label>
-                  <input style={{...stile.input, ...(focusedField === "ckeyd"? stile.inputFocus : {})}}
+                  <input style={{...stile.input, ...(focusedField === "key"? stile.inputFocus : {})}}
                           value={idempKey} placeholder="unique-key-001 or leave blank"
                           onChange={ elem => setIdempKey(elem.target.value)}
                           onFocus={()=> setFocusedField("key")}
