@@ -738,11 +738,29 @@ export default function App(){
                   </button>
 
                 </div>
-                
+
+                <div style={{
+                  fontSize: 11,
+                  color: C.textMutedColor,
+                  paddingTop:4,
+                  borderTop: `1px solid ${C.borderColor}`
+                }}>
+                  Mock Gateway: 
+                  <span style={{color: C.successColor}}>
+                    {' 80% success'}
+                  </span> {' / '} 
+                  <span style={{color: C.dangerColor}}>
+                    20% failure
+                  </span>
+                    {' triggers compensation pattern.'}
+
+                </div>
 
               </div>
 
             </div>
+
+
 
 
           </div>
