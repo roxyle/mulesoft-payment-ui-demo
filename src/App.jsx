@@ -486,6 +486,14 @@ export default function App(){
     setProcessing(false);
   }
 
+    function testIdempotency() {
+    if (!lastResult || lastResult.type === "idempotency") return;
+    const entry = idempotency.find(r => r.order_id === lastResult.orderId);
+    if (entry) setIdempKey(entry.key);
+    addLog(`Re-using same idempotency key: ${entry?.key?.substring(0,16)}...`, "warn");
+    addLog(`Next request will HIT the cache -- no duplicate processing`, "warn");
+  }
+
   //interfaccia
   return (
     <div style={stile.root}>
@@ -719,12 +727,18 @@ export default function App(){
                     {processing? "Processing...": "▶  Process Payment"}
 
                   </button>
-                  <button //test idempotency
+                  <button style={{ ...stile.btn("ghost"), fontSize:11,
+                    opacity: (!lastResult || lastResult.type !== "success") ? 0.4 : 1
+                  }}
+                  onClick={testIdempotency}
+                  disabled={!lastResult || lastResult.type !== "success"}
+                  title="Re-use last successful key to test idempotency"
                   >
-
+                    ⟳ Re-use Key
                   </button>
 
                 </div>
+                
 
               </div>
 
