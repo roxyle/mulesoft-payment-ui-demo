@@ -760,10 +760,88 @@ export default function App(){
 
             </div>
 
+            {/* STEPS */}
+            {
+              steps.length > 0 && (
+                <div style={stile.card} className="animate">
+                  <div style={stile.sectionLabel}>
+                    <span style={{color: C.primaryColor}}>
+                      ⬡
+                    </span> Orchestration Flow
 
+                  </div>
 
+                  {
+                    steps.map(
+                      (step, index) => (
+                        <FlowStep key={index} num={index+1} label={stile.label}
+                        desc={stile.desc} status={stile.status} active={stile.active} />
+                      )
+                    )
+                  }
+
+                </div>
+              )
+            }
+
+            {/* Last result */}
+            {lastResult && (
+              <div style={{
+                ...stile.card, 
+                className: "animate",
+                borderColor: lastResult.type === "success"? C.successColor :
+                lastResult.type === "idempotency"? C.warningColor :
+                C.dangerColor
+              }}>
+                <div style={stile.sectionLabel}>
+                  {lastResult.type === "success"? "✓ Response 200" :
+                  lastResult.type === "failure" ? "✗ Response 500" : 
+                  "⟳ Response 200 (cached)"
+                  }
+
+                </div>
+
+                <pre style={{
+                  background: C.bgColor,
+                  padding: 12,
+                  borderRadius: 6,
+                  fontSize:11,
+                  color: C.textCodeColor,
+                  overflowX: "auto",
+                  //lineHeight: 1.7
+                  }}>
+
+                    {
+                      lastResult.type === "success" ? `{
+                      "status": "success",
+                      "order_id": ${lastResult.orderId},
+                      "correlation_id": "${lastResult.correlationId?.substring(0,16)} ...",
+                      "amount": ${lastResult.amount},
+                      "timestamp": "${now()}"
+                      }` : lastResult.type === "failure" ? 
+                      `{
+                        "status": "failed",
+                        "order_id": ${lastResult.orderId},
+                        "errorInfo": {
+                          "errorType": "APP:PAYMENT_GATEWAY_ERROR",
+                          "description": "Payment gateway timeout simulation"
+                        }
+                      }` : `{
+                            "status": "success",
+                            "order_id": ${lastResult.orderId},
+                            "note": "Idempotency hit -- cached response returned",
+                            "key": "${lastResult.key?.substring(0,20)}..."
+                          }`
+                    }
+                
+                </pre>
+
+              </div>
+            )}
 
           </div>
+
+          
 
         </div>
 
