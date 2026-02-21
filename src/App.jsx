@@ -336,7 +336,12 @@ export default function App(){
   const [logs,        setLogs]        = useState([]);
   const [activeTab,   setActiveTab]   = useState("orders");
 
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+  const logRef = useRef(null);
+  useEffect(() => {
+    if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+  }, [logs]);
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
   async function runStep(idx, label, desc, status, delay = 600) {
     setSteps(prev => {
@@ -494,8 +499,18 @@ export default function App(){
     addLog(`Next request will HIT the cache -- no duplicate processing`, "warn");
   }
 
+  function reset() {
+    setOrders([]); setPayments([]); setIdempotency([]);
+    setSteps([]); setLastResult(null); setLogs([]);
+    setIdempKey(""); orderIdCounter = 1; paymentIdCounter = 1;
+    addLog("System reset -- all tables cleared", "system");
+  }
+
   //interfaccia
   return (
+
+
+
     <div style={stile.root}>
       <style>
         {
@@ -551,13 +566,13 @@ export default function App(){
             localhost:8081
           </span>
 
-          <button id="reset" style={
+          <button id="reset" onClick={reset}
+          style={
             {
               ...stile.btn("ghost"),
               fontSize:11
             }
           }
-          //onClick={reset}
           >
             ↺ Reset
           </button>
@@ -808,7 +823,7 @@ export default function App(){
                   fontSize:11,
                   color: C.textCodeColor,
                   overflowX: "auto",
-                  //lineHeight: 1.7
+                  lineHeight: 1.7
                   }}>
 
                     {
@@ -829,7 +844,7 @@ export default function App(){
                       }` : `{
                             "status": "success",
                             "order_id": ${lastResult.orderId},
-                            "note": "Idempotency hit -- cached response returned",
+                            "note": "Idempotency hit. cached response returned",
                             "key": "${lastResult.key?.substring(0,20)}..."
                           }`
                     }
@@ -841,7 +856,41 @@ export default function App(){
 
           </div>
 
+          {/*PANEL DI DESTRA LOG */}
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap:16
+          }}> {/*console log */}
+
+          <div style={stile.card}>
+            <div style={StatCard.sectionLabel}>
+              <span style={{color: C.textCodeColor}}> $
+              </span> Console Log
+
+            </div>
+            <div style={stile.logBox} ref={logRef}>
+              {
+                logs.length === 0 ? 
+                <span style={{color: C.textMutedColor}}>
+                  - - - awaiting request - - -
+                </span> 
+                : logs.map((log, index)=> (
+                  <div style={{color: log.color}} key={index}>
+                    {log.msg}
+                  </div>
+                ))
+              }
+
+            </div>
+
+          </div>
+
           
+
+          </div>
+
+
 
         </div>
 
