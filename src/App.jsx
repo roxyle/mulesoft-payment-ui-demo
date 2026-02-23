@@ -886,7 +886,44 @@ export default function App(){
 
           </div>
 
-          
+          {/*DB table */}
+          <div style={stile.card}>
+            <div style={{
+              display:"flex",
+              gap: 0,
+              marginBottom: 16,
+              borderBottom:`1px solid ${C.borderColor}`
+            }}>
+
+              {[
+                ["orders", `ORDERS (${orders.length})`],
+                ["payments", `PAYMENTS (${payments.length})`],
+                ["idempotency", `IDEMPOTENCY_LOG (${idempotency.length})`]
+              ].map(([id,label])=> (
+                <button key={id} 
+                onClick={()=> setActiveTab(id)}
+                style={{
+                  padding: "8px 14px",
+                  background: "none",
+                  border: "none",
+                  borderBottom: activeTab === id? `2px slid ${C.primaryColor}` :
+                  "2px solid transparent",
+                  color: activeTab === id? C.primaryColor : C.textLabelColor,
+                  fontFamily: "inherit",
+                  fontSize:11,
+                  fontWeight:600,
+                  cursor:"pointer",
+                  marginBottom:-1,
+                  transition:"color 0.15s"
+                }}>
+                  {label}
+                </button>
+              ))
+              }
+
+            </div>
+
+          </div>
 
           </div>
 
