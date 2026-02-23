@@ -1029,7 +1029,9 @@ export default function App(){
                     </table>
                   }
 
-                  
+                  <div style={{fontSize:11, color: C.textMutedColor, marginTop:10}}>
+                  If order #{"{id}"} has no payment here, compensation was applied
+                  </div>
 
                 </div>
               )
