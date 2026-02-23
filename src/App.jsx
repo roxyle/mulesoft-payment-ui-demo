@@ -1037,6 +1037,54 @@ export default function App(){
               )
             }
 
+            {/*idempotency table */}
+            {
+              activeTab === "idempotency" && (
+                <div style={{overflowX: "auto"}}>
+                  {
+                    idempotency.length===0?
+                    <div style={{
+                      color: C.textMutedColor,
+                      fontSize:12,
+                      padding:"12px 0"
+                    }}>
+                      No entries. Only cached on SUCCESS (errors not cached)
+                    </div>
+                    : <table>
+                        <thead>
+                          <tr>
+                            {
+                              ["key", "order_id", "expires_at"].map(
+                                header=>(
+                                  <th key={header} style={stile.th}>{header}</th>
+                                )
+                              )
+                            }
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {
+                              idempotency.map(
+                                (record, index)=>(
+                                  <tr key={index}>
+                                    <td style={{...stile.td, color: C.code}}>
+                                      {record.key.substring(0,20)} ...
+                                    </td>
+                                    <td style={stile.td}>{record.order_id}</td>
+                                    <td style={{...stile.td, color: C.warningColor}}>{record.expires_at}</td>
+                                  </tr>
+                                )
+                              )
+                            }
+
+                        </tbody>
+                    </table>
+                  }
+                  
+                </div>
+              )
+            }
+
           </div>
 
           </div>
