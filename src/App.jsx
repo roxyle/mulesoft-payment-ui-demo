@@ -923,6 +923,118 @@ export default function App(){
 
             </div>
 
+            {/*orders table */}
+            {
+              activeTab === "orders" && (
+                <div style={{overflowX: "auto"}}>
+
+                  {
+                    orders.length === 0? <div style={{
+                      color: C.textMutedColor,
+                      fontSize:12,
+                      padding: "12px 0"
+                    }}> No records </div> :
+                    <table style={stile.table}>
+                      <thead>
+                        <tr>
+                          {
+                            ["id", "customer_id", "amount", "status", "correlation_id", "created_at"].map(
+                              columnName => (
+                                <th key={columnName} style={stile.th}>
+                                  {columnName}
+                                </th>
+                              )
+                            )
+                          }
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          orders.map(
+                            order=> (
+                              <tr key={order.id}>
+                                <td style={stile.td}>{order.id}</td>
+                                <td style={stile.td}>{order.customer_id}</td>
+                                <td style={stile.td}>€{order.amount.toFixed(2)}</td>
+                                <td style={stile.td}>{stile.pill(order.status)}</td>
+                                <td style={{...stile.td, color: C.textMutedColor}}>
+                                  {order.correlation_id.substring(0,10)} ...
+                                </td>
+                                <td style={{...stile.td, color: C.textMutedColor}}> 
+                                  {order.created_at}
+                                </td>
+
+                              </tr>
+                            )
+                          )
+                        }
+                      </tbody>
+
+                    </table>
+                  }
+
+                  <div style={{
+                    fontSize:11,
+                    color: C.textMutedColor,
+                    marginTop:10
+                  }}>
+                    Pending status is transient, always resolve to CONFIRMED or FAILED.
+
+                  </div>
+
+                </div>
+              )
+            }
+
+            {/*payments table */}
+            {
+              activeTab === "payments" && (
+                <div style={{overflowX: "auto"}}>
+                  {
+                    payments.length === 0 ? <div style={{
+                      color: C.textMutedColor,
+                      fontSize:12,
+                      padding:"12px 0"
+                    }}>
+                        No payments recorded: only created on gateway success
+                    </div>
+                    : 
+                    <table style={stile.table}>
+                      <thead>
+                        <tr>
+                          {
+                            ["id", "order_id", "amount", "method", "status", "created_at"].map(
+                              header => (
+                                <th key={header} style={stile.th}>{header}</th>
+                              )
+                            )
+                          }
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          payments.map(payment=>(
+                            <tr key={payment.id}>
+                              <td style={stile.td}>{payment.id}</td>
+                              <td style={stile.td}>{payment.order_id}</td>
+                              <td style={stile.td}>€{payment.amount.toFixed(2)}</td>
+                              <td style={{...stile.td, color: C.code}}>{payment.method}</td>
+                              <td style={stile.td}>{stile.pill(payment.status)}</td>
+                              <td style={{...stile.td, color: C.textMutedColor}}>{payment.created_at}</td>
+
+                            </tr>
+                          ))
+                        }
+                      </tbody>
+                    </table>
+                  }
+
+                  
+
+                </div>
+              )
+            }
+
           </div>
 
           </div>
