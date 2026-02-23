@@ -1080,11 +1080,71 @@ export default function App(){
                         </tbody>
                     </table>
                   }
-                  
+                  <div style={{fontSize:11, color:C.textMutedColor, marginTop:10}}>
+                    TTL: 24h from creation prevents duplicate processing on network retry
+                  </div>
                 </div>
               )
             }
 
+          </div>
+
+          {/* Legenda */}
+          <div style={stile.card}>
+            <div style={stile.sectionLabel}>
+            <span style={{color: C.primaryColor}}> ◈
+            </span> Pattern Reference
+
+            </div>
+            <div style={{
+              display:"flex",
+              flexDirection: "column",
+              gap:10
+            }}>
+
+              {
+                [
+                  {
+                    title: "Compensation (Saga)",
+                    color: C.dangerColor,
+                    desc: "On gateway failure: order stays in DB with status=FAILED. No payment record created and no pending orphans. Simulates a distributed rollback without 2 phase commit"
+                  },
+                  {
+                    title: "Idempotency (24h TTL)",
+                    color: C.warningColor,
+                    desc: "Same key within 24h returns cached response instantly, skipping all DB writes and gateway calls. To test it: send an order then click 'Re-use key'."
+                  },
+                  {
+                    title: "Correlation ID",
+                    color: C.code,
+                    desc:"UUID generated per request, stored in orders table and returned in every response, enables tracing single transaction across all systems and logs"
+                  }
+                ].map(pattern => (
+                  <div key={pattern.title} style={{
+                    padding: "10px 12px",
+                    background: C.bgColor,
+                    borderRadius:6,
+                    borderLeft: `3px solid ${pattern.color}`
+                  }}>
+                    <div style={{
+                      color: pattern.color,
+                      fontWeight:600,
+                      fontSize:12,
+                      marginBottom:4
+                    }}>
+                      {pattern.title}
+                    </div>
+                    <div style={{
+                      color: C.textLabelColor,
+                      fontSize:11
+                    }}>
+                      {pattern.desc}
+                    </div>
+                  </div>
+                ))
+              }
+
+            </div>
           </div>
 
           </div>
@@ -1092,6 +1152,8 @@ export default function App(){
 
 
         </div>
+
+        {/* footer */}
 
 
 
