@@ -1116,7 +1116,7 @@ export default function App(){
                   },
                   {
                     title: "Correlation ID",
-                    color: C.code,
+                    color: C.textCodeColor,
                     desc:"UUID generated per request, stored in orders table and returned in every response, enables tracing single transaction across all systems and logs"
                   }
                 ].map(pattern => (
