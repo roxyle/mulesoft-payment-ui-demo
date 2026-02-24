@@ -358,8 +358,14 @@ export default function App(){
   }
 
   function addLog(msg, type = "info") {
-    const colors = { info: C.textMid, success: C.success, error: C.danger, warn: C.warning, system: C.code };
-    setLogs(prev => [...prev, { msg, color: colors[type] || C.textMid, ts: now() }]);
+  const colors = { 
+  info: C.textLabelColor, 
+  success: C.successColor, 
+  error: C.dangerColor, 
+  warn: C.warningColor, 
+  system: C.textCodeColor 
+};
+    setLogs(prev => [...prev, { msg, color: colors[type] || C.textLabelColor, ts: now() }]);
   }
 
   async function processPayment() {
@@ -789,8 +795,8 @@ export default function App(){
                   {
                     steps.map(
                       (step, index) => (
-                        <FlowStep key={index} num={index+1} label={stile.label}
-                        desc={stile.desc} status={stile.status} active={stile.active} />
+                        <FlowStep key={index} num={index+1} label={step.label}
+                        desc={step.desc} status={step.status} active={step.active} />
                       )
                     )
                   }
@@ -864,7 +870,7 @@ export default function App(){
           }}> {/*console log */}
 
           <div style={stile.card}>
-            <div style={StatCard.sectionLabel}>
+            <div style={stile.sectionLabel}>
               <span style={{color: C.textCodeColor}}> $
               </span> Console Log
 
@@ -906,7 +912,7 @@ export default function App(){
                   padding: "8px 14px",
                   background: "none",
                   border: "none",
-                  borderBottom: activeTab === id? `2px slid ${C.primaryColor}` :
+                  borderBottom: activeTab === id? `2px solid ${C.primaryColor}` :
                   "2px solid transparent",
                   color: activeTab === id? C.primaryColor : C.textLabelColor,
                   fontFamily: "inherit",
@@ -1018,7 +1024,7 @@ export default function App(){
                               <td style={stile.td}>{payment.id}</td>
                               <td style={stile.td}>{payment.order_id}</td>
                               <td style={stile.td}>€{payment.amount.toFixed(2)}</td>
-                              <td style={{...stile.td, color: C.code}}>{payment.method}</td>
+                              <td style={{...stile.td, color: C.textCodeColor}}>{payment.method}</td>
                               <td style={stile.td}>{stile.pill(payment.status)}</td>
                               <td style={{...stile.td, color: C.textMutedColor}}>{payment.created_at}</td>
 
@@ -1067,7 +1073,7 @@ export default function App(){
                               idempotency.map(
                                 (record, index)=>(
                                   <tr key={index}>
-                                    <td style={{...stile.td, color: C.code}}>
+                                    <td style={{...stile.td, color: C.textCodeColor}}>
                                       {record.key.substring(0,20)} ...
                                     </td>
                                     <td style={stile.td}>{record.order_id}</td>
@@ -1154,6 +1160,33 @@ export default function App(){
         </div>
 
         {/* footer */}
+        <div style={{
+          color:C.textMutedColor,
+          fontSize:11,
+          display:"flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop:24,
+          paddingTop:16,
+          borderTop:`1px solid ${C.borderColor}`,
+
+        }}>
+          <span>
+            Payment Orchestration System * Ylenia Rossi * Portfolio Project
+          </span>
+          <div style={{display: "flex", gap:16}}>
+            <a href="https://github.com/roxyle/mulesoft-payment-orchestration" target="_blank"
+              style={{color: C.textMutedColor, textDecoration:"underline"}}>
+              * GitHub *
+            </a>
+            <a href="https://portfolio-ylenia-ten.vercel.app/" target="_blank"
+              style={{color: C.textMutedColor, textDecoration:"underline"}}>
+              * Portfolio *
+            </a>
+
+          </div>
+
+        </div>
 
 
 
