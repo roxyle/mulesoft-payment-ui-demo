@@ -748,8 +748,14 @@ export default function App(){
                     {processing? "Processing...": "▶  Process Payment"}
 
                   </button>
-                  <button style={{ ...stile.btn("ghost"), fontSize:11,
-                    opacity: (!lastResult || lastResult.type !== "success") ? 0.4 : 1
+                  <button style={{ 
+                    ...stile.btn(lastResult?.type ==="success"? "primary":"ghost"),
+                    fontSize:11,
+                    opacity: (!lastResult || lastResult.type !== "success")? 0.4:1,
+                    border: lastResult?.type==="success"? `2px solid ${C.warningColor}`:undefined,
+                    background: lastResult?.type==="success"? C.warningColor : undefined,
+                    color: lastResult?.type==="success"? "#000":C.textLabelColor,
+                    fontWeight: lastResult?.type==="success"? 700 : 600
                   }}
                   onClick={testIdempotency}
                   disabled={!lastResult || lastResult.type !== "success"}
