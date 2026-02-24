@@ -296,7 +296,7 @@ function FlowStep({num, label, desc, status, active}) {
 
 function StatCard({label, value, color = C.primaryColor, sub}) {
   return (
-    <div style={stile.card}>
+    <div style={stile.card} className="card-responsive">
       <div style={{fontSize:11, color: C.textLabelColor, marginBottom:6}}>
         {label}
       </div>
@@ -521,28 +521,54 @@ export default function App(){
       <style>
         {
           `
-          @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap')
-          
-          * {
-          box-sizing: border-box;
-          margin: 0;
-          padding:0
-          }
-          ::-webkit-scrollbar { width: 5px; height: 5px; }
-          ::-webkit-scrollbar-track {background: ${C.bgColor}}
-          ::-webkit-scrollbar-thumb { background: ${C.borderColor}; border-radius: 3px; }
-          @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-          @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
-          .animate { animation: fadeIn 0.3s ease forwards; }
-          input:focus { border-color: ${C.primaryColor} !important; }
-          button:hover { opacity: 0.85; transform: translateY(-1px); }
-          button:active { transform: translateY(0); }
-          tr:hover td { background: ${C.bgElement}40; }
+            @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap')
+            
+            * {
+            box-sizing: border-box;
+            margin: 0;
+            padding:0
+            }
+            ::-webkit-scrollbar { width: 5px; height: 5px; }
+            ::-webkit-scrollbar-track {background: ${C.bgColor}}
+            ::-webkit-scrollbar-thumb { background: ${C.borderColor}; border-radius: 3px; }
+            @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+            @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+            .animate { animation: fadeIn 0.3s ease forwards; }
+            input:focus { border-color: ${C.primaryColor} !important; }
+            button:hover { opacity: 0.85; transform: translateY(-1px); }
+            button:active { transform: translateY(0) }
+            tr:hover td { background: ${C.bgElement}40 }
+
+            /*tablet*/
+
+            @media (max-width: 900px) {
+              .grid2-responsive { 
+                grid-template-columns: 1fr !important; 
+              }
+              .header-responsive {
+                flex-direction: column !important;
+                gap: 12px !important;
+                align-items: flex-start !important;
+              }
+            }
+              /*mobile*/
+            @media (max-width: 640px) {
+              .grid3-responsive { 
+                grid-template-columns: 1fr !important; 
+              }
+              .main-responsive {
+                padding: 16px !important;
+              }
+              .card-responsive {
+                padding: 16px !important;
+              }
+            }
+
           `
         }
       </style>
 
-      <header style={stile.header}>
+      <header style={{...stile.header}} className="header-responsive">
         <div style={stile.headerLeft}>
           <div style={stile.logo}>
             YR
@@ -587,7 +613,7 @@ export default function App(){
 
       </header>
 
-      <main style={stile.main}>
+      <main style={stile.main} className="main-responsive">
 
         {/* DESCRIPTION PANEL*/}
 
@@ -596,7 +622,7 @@ export default function App(){
           marginBottom:20,
           borderColor: C.primaryColor,
           background: `linear-gradient(135deg, ${C.bgCard}, ${C.primaryColor}08)`
-        }}>
+        }} className="card-responsive">
           
           <div style={{
             display:"flex",
@@ -671,7 +697,7 @@ export default function App(){
         </div>
 
         {/*STATS PANEL*/}
-        <div style={{ ...stile.grid3, marginBottom:20}}>
+        <div style={{ ...stile.grid3, marginBottom:20}} className="grid3-responsive">
           <StatCard label="Total orders" value={orders.length} color={C.primaryColor} sub="ORDERS table" />
           <StatCard label="Confirmed" value={confirmed} color={C.successColor} sub="Payments recorded" />
           <StatCard label="Success Rate" value={successRate === "--" ? "--" : successRate + "%"} 
@@ -679,7 +705,7 @@ export default function App(){
         </div>
 
 
-        <div style={stile.grid2}>
+        <div style={stile.grid2} className="grid2-responsive">
 
           {/* POST ORDERS PANEL/FORM */}
           <div style={{
@@ -688,7 +714,7 @@ export default function App(){
             gap: 16
           }}>
 
-            <div style={stile.cardAccent}>
+            <div style={stile.cardAccent} className="card-responsive">
               <div style={stile.sectionLabel}>
                 <span style={{color: C.primaryColor}}>▶ </span>
                 POST /orders
@@ -790,7 +816,7 @@ export default function App(){
             {/* STEPS */}
             {
               steps.length > 0 && (
-                <div style={stile.card} className="animate">
+                <div style={stile.card} className="animate card-responsive">
                   <div style={stile.sectionLabel}>
                     <span style={{color: C.primaryColor}}>
                       ⬡
@@ -813,9 +839,9 @@ export default function App(){
 
             {/* Last result */}
             {lastResult && (
-              <div style={{
+              <div className="animate card-responsive"
+                style={{
                 ...stile.card, 
-                className: "animate",
                 borderColor: lastResult.type === "success"? C.successColor :
                 lastResult.type === "idempotency"? C.warningColor :
                 C.dangerColor
@@ -875,7 +901,7 @@ export default function App(){
             gap:16
           }}> {/*console log */}
 
-          <div style={stile.card}>
+          <div style={stile.card} className="card-responsive">
             <div style={stile.sectionLabel}>
               <span style={{color: C.textCodeColor}}> $
               </span> Console Log
@@ -899,7 +925,7 @@ export default function App(){
           </div>
 
           {/*DB table */}
-          <div style={stile.card}>
+          <div style={stile.card} className="card-responsive">
             <div style={{
               display:"flex",
               gap: 0,
@@ -1102,7 +1128,7 @@ export default function App(){
           </div>
 
           {/* Legenda */}
-          <div style={stile.card}>
+          <div style={stile.card} className="card-responsive">
             <div style={stile.sectionLabel}>
             <span style={{color: C.primaryColor}}> ◈
             </span> Pattern Reference
