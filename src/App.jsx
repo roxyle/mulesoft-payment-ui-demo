@@ -554,14 +554,30 @@ export default function App(){
               /*mobile*/
             @media (max-width: 640px) {
               .grid3-responsive { 
-                grid-template-columns: 1fr !important; 
+                grid-template-columns: 1fr; 
               }
-              .main-responsive {
-                padding: 16px !important;
+              main.main-responsive {
+                padding: 16px;
               }
-              .card-responsive {
-                padding: 16px !important;
+              div.card-responsive {
+                padding: 16px;
               }
+              .card-responsive table {
+              font-size:10px;
+              }
+              .card-responsive th, .card-responsive td {
+              padding:6px 4px;
+              white-space: nowrap;
+              }
+              div.log-box-responsive{
+              font-size:9px;
+              word-break: break-all;
+              }
+              .header-responsive span[style*="display: inline-flex"] {
+              font-size:9px;
+              padding: 2px 6px
+              }
+              
             }
 
           `
@@ -907,7 +923,7 @@ export default function App(){
               </span> Console Log
 
             </div>
-            <div style={stile.logBox} ref={logRef}>
+            <div style={stile.logBox} ref={logRef} className="log-box-responsive">
               {
                 logs.length === 0 ? 
                 <span style={{color: C.textMutedColor}}>
