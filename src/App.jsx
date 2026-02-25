@@ -75,8 +75,8 @@ const stile = {
     animation: "pulse 2s ease-in-out infinite",
   }),
   main: { padding: "24px 32px", maxWidth: 1400, margin: "0 auto" },
-  grid2: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 },
-  grid3: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 },
+  grid2: { display: "grid", gap: 16 },
+  grid3: { display: "grid", gap: 16 },
   section: { marginBottom: 24 },
   sectionLabel: {
     fontSize:10,
@@ -539,6 +539,8 @@ export default function App(){
             button:active { transform: translateY(0) }
             tr:hover td { background: ${C.bgElement}40 }
 
+            .grid2-responsive > *, .grid3-responsive > * { min-width: 0; }
+
             /*tablet*/
 
             @media (max-width: 900px) {
@@ -567,7 +569,7 @@ export default function App(){
               }
               .card-responsive th, .card-responsive td {
               padding:6px 4px;
-              white-space: nowrap;
+              white-space: normal;
               }
               div.log-box-responsive{
               font-size:9px;
