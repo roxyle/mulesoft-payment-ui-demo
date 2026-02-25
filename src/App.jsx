@@ -524,7 +524,6 @@ export default function App(){
             @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap')
             
             * {
-            max-width: 100%
             box-sizing: border-box;
             margin: 0;
             padding:0
@@ -544,12 +543,12 @@ export default function App(){
 
             @media (max-width: 900px) {
               .grid2-responsive { 
-                grid-template-columns: 1fr; 
+                grid-template-columns: 1fr !important; 
               }
               .header-responsive {
-                flex-direction: column;
+                flex-direction: column !important;
                 gap: 12px !important;
-                align-items: flex-start;
+                align-items: flex-start !important;
               }
             }
               /*mobile*/
@@ -562,11 +561,9 @@ export default function App(){
               }
               div.card-responsive {
                 padding: 16px;
-                overflow-x: hidden;
               }
               .card-responsive table {
               font-size:10px;
-              overflow-x: hidden;
               }
               .card-responsive th, .card-responsive td {
               padding:6px 4px;
