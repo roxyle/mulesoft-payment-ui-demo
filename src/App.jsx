@@ -316,24 +316,6 @@ function StatCard({label, value, color = C.primaryColor, sub}) {
 
 export default function App(){
 
-  const responseObject = lastResult.type === "success" ?
-  { status: "success",
-    order_id: lastResult.orderId,
-    correlation_id: `${lastResult.correlationId?.substring(0, 16)}...`,
-    amount: lastResult.amount, timestamp: now()
-  } 
-  : lastResult.type === "failure" ?
-  { status: "failed",
-    order_id: lastResult.orderId,
-    errorInfo: { errorType: "APP:PAYMENT_GATEWAY_ERROR",
-                description: "Payment gateway timeout simulation"
-              }
-  }
-  : { status: "success",
-    order_id: lastResult.orderId,
-    note: "Idempotency hit. cached response returned",
-    key: `${lastResult.key?.substring(0, 20)}...` };
-
   //form 
   const [customerId, setCustomerId] = useState("CUST001")
   const [amount, setAmount]= useState("99.99")
@@ -358,6 +340,27 @@ export default function App(){
   const [activeTab,   setActiveTab]   = useState("orders");
 
   const logRef = useRef(null);
+
+  const responseObject = !lastResult ? null :
+  
+  lastResult.type === "success" ?
+  { status: "success",
+    order_id: lastResult.orderId,
+    correlation_id: `${lastResult.correlationId?.substring(0, 16)}...`,
+    amount: lastResult.amount, timestamp: now()
+  } 
+  : lastResult.type === "failure" ?
+  { status: "failed",
+    order_id: lastResult.orderId,
+    errorInfo: { errorType: "APP:PAYMENT_GATEWAY_ERROR",
+                description: "Payment gateway timeout simulation"
+              }
+  }
+  : { status: "success",
+    order_id: lastResult.orderId,
+    note: "Idempotency hit. cached response returned",
+    key: `${lastResult.key?.substring(0, 20)}...` };
+
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [logs]);
