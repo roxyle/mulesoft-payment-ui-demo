@@ -254,6 +254,8 @@ function ttl24h(){
   return date.toISOString().replace("T"," ").substring(0,19)
 }
 
+
+
 function FlowStep({num, label, desc, status, active}) {
   //num=numero dello step, label=titolo dello step, 
   //desc=descrizione tecnica sotto, status=stato corrente dello step
@@ -313,6 +315,25 @@ function StatCard({label, value, color = C.primaryColor, sub}) {
 }
 
 export default function App(){
+
+  const responseObject = lastResult.type === "success" ?
+  { status: "success",
+    order_id: lastResult.orderId,
+    correlation_id: `${lastResult.correlationId?.substring(0, 16)}...`,
+    amount: lastResult.amount, timestamp: now()
+  } 
+  : lastResult.type === "failure" ?
+  { status: "failed",
+    order_id: lastResult.orderId,
+    errorInfo: { errorType: "APP:PAYMENT_GATEWAY_ERROR",
+                description: "Payment gateway timeout simulation"
+              }
+  }
+  : { status: "success",
+    order_id: lastResult.orderId,
+    note: "Idempotency hit. cached response returned",
+    key: `${lastResult.key?.substring(0, 20)}...` };
+
   //form 
   const [customerId, setCustomerId] = useState("CUST001")
   const [amount, setAmount]= useState("99.99")
@@ -874,37 +895,18 @@ export default function App(){
 
                 <pre style={{
                   background: C.bgColor,
-                  padding: 12,
-                  borderRadius: 6,
+                  padding:12,
+                  borderRadius:6,
                   fontSize:11,
-                  color: C.textCodeColor,
+                  color:C.textCodeColor,
                   overflowX: "auto",
-                  lineHeight: 1.7
-                  }}>
+                  lineHeight:1.7
+                }}>
 
-                    {
-                      lastResult.type === "success" ? `{
-                      "status": "success",
-                      "order_id": ${lastResult.orderId},
-                      "correlation_id": "${lastResult.correlationId?.substring(0,16)} ...",
-                      "amount": ${lastResult.amount},
-                      "timestamp": "${now()}"
-                      }` : lastResult.type === "failure" ? 
-                      `{
-                        "status": "failed",
-                        "order_id": ${lastResult.orderId},
-                        "errorInfo": {
-                          "errorType": "APP:PAYMENT_GATEWAY_ERROR",
-                          "description": "Payment gateway timeout simulation"
-                        }
-                      }` : `{
-                            "status": "success",
-                            "order_id": ${lastResult.orderId},
-                            "note": "Idempotency hit. cached response returned",
-                            "key": "${lastResult.key?.substring(0,20)}..."
-                          }`
-                    }
-                
+                  {
+                    JSON.stringify(responseObject, null, 2)
+                  }
+
                 </pre>
 
               </div>
