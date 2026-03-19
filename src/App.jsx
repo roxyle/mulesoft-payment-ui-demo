@@ -329,7 +329,7 @@ export default function App(){
 
   // statistiche
   const confirmed = orders.filter(o => o.status === "CONFIRMED").length;
-  const failed = orders.filter(o => o.status === "FAILED").length;
+  //const failed = orders.filter(o => o.status === "FAILED").length;
   const successRate = orders.length ? Math.round((confirmed / orders.length) * 100) : "--";
 
   // stato UI 
