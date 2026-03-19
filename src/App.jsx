@@ -76,7 +76,7 @@ const stile = {
   }),
   main: { padding: "24px 32px", maxWidth: 1400, margin: "0 auto" },
   grid2: { display: "grid", gap: 16 },
-  grid3: { display: "grid", gap: 16 },
+  grid3: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 },
   section: { marginBottom: 24 },
   sectionLabel: {
     fontSize:10,
@@ -329,7 +329,7 @@ export default function App(){
 
   // statistiche
   const confirmed = orders.filter(o => o.status === "CONFIRMED").length;
-  const failed    = orders.filter(o => o.status === "FAILED").length;
+  const failed = orders.filter(o => o.status === "FAILED").length;
   const successRate = orders.length ? Math.round((confirmed / orders.length) * 100) : "--";
 
   // stato UI 
